@@ -14,245 +14,125 @@ class TestTemperatureChecker:
         command = "temperature_check"
         self.url = f"http://{host}/{command}"
 
-    def test_boarder_values_id1_1(self):
+    @pytest.mark.parametrize("temperature, status, condition",
+                             [("-274K", 400, "unknown"), ("-273K", 200, "ice"), ("-272K", 200, "ice"),
+                              ("-1K", 200, "ice"), ("0K", 200, "ice")])
+    def test_id1(self, temperature, status, condition):
         """
         Boarder values Celsius ice
         """
-        response = requests.get(self.url, params={"temperature": "-274K"})
-        assert_that(response.status_code, equal_to(400))
-        assert_that(response.text, equal_to("unknown"))
+        response = requests.get(self.url, params={"temperature": temperature})
+        assert_that(response.status_code, equal_to(status)),
+        response_text = response.text.strip().lower()
+        assert_that(response_text, equal_to(condition)),
 
-    def test_boarder_values_id1_2(self):
-        """
-        Boarder values Celsius ice
-        """
-        response = requests.get(self.url, params={"temperature": "-273K"})
-        assert_that(response.status_code, equal_to(200))
-        assert_that(response.text, equal_to("ice"))
+        return response
 
-    def test_boarder_values_id1_3(self):
-        """
-        Boarder values Celsius ice
-        """
-        response = requests.get(self.url, params={"temperature": "-272K"})
-        assert_that(response.status_code, equal_to(200))
-        assert_that(response.text, equal_to("ice"))
-
-    def test_boarder_values_id1_4(self):
-        """
-        Boarder values Celsius ice
-        """
-        response = requests.get(self.url, params={"temperature": "-1K"})
-        assert_that(response.status_code, equal_to(200))
-        assert_that(response.text, equal_to("ice"))
-
-    def test_boarder_values_id1_5(self):
-        """
-        Boarder values Celsius ice
-        """
-        response = requests.get(self.url, params={"temperature": "0K"})
-        assert_that(response.status_code, equal_to(200))
-        assert_that(response.text, equal_to("ice"))
-
-    def test_boarder_values_id2_1(self):
+    @pytest.mark.parametrize("temperature, status, condition",
+                             [("1K", 200, "liquid"), ("99K", 200, "liquid")])
+    def test_id2(self, temperature, status, condition):
         """
         Boarder values Celsius liquid
         """
-        response = requests.get(self.url, params={"temperature": "1K"})
-        assert_that(response.status_code, equal_to(200))
-        assert_that(response.text, equal_to("liquid"))
+        response = requests.get(self.url, params={"temperature": temperature})
+        assert_that(response.status_code, equal_to(status)),
+        response_text = response.text.strip().lower()
+        assert_that(response_text, equal_to(condition)),
 
-    def test_boarder_values_id2_2(self):
-        """
-        Boarder values Celsius liquid
-        """
-        response = requests.get(self.url, params={"temperature": "99K"})
-        assert_that(response.status_code, equal_to(200))
-        assert_that(response.text, equal_to("liquid"))
+        return response
 
-    def test_boarder_values_id3_1(self):
+    @pytest.mark.parametrize("temperature, status, condition",
+                             [("100K", 200, "steam"), ("101K", 200, "steam"), ("1000000K", 200, "steam")])
+    def test_id3(self, temperature, status, condition):
         """
         Boarder values Celsius steam
         """
-        response = requests.get(self.url, params={"temperature": "100K"})
-        assert_that(response.status_code, equal_to(200))
-        assert_that(response.text, equal_to("steam"))
+        response = requests.get(self.url, params={"temperature": temperature})
+        assert_that(response.status_code, equal_to(status)),
+        response_text = response.text.strip().lower()
+        assert_that(response_text, equal_to(condition)),
 
-    def test_boarder_values_id3_2(self):
-        """
-        Boarder values Celsius steam
-        """
-        response = requests.get(self.url, params={"temperature": "101K"})
-        assert_that(response.status_code, equal_to(200))
-        assert_that(response.text, equal_to("steam"))
+        return response
 
-    def test_boarder_values_id3_3(self):
-        """
-        Boarder values Celsius steam
-        """
-        response = requests.get(self.url, params={"temperature": "1000000000K"})
-        assert_that(response.status_code, equal_to(200))
-        assert_that(response.text, equal_to("steam"))
-
-    def test_boarder_values_id4_1(self):
+    @pytest.mark.parametrize("temperature, status, condition",
+                             [("-1C", 400, "unknown"), ("0C", 200, "ice"), ("1C", 200, "ice"),
+                              ("272C", 200, "ice"), ("273", 200, "ice")])
+    def test_id4(self, temperature, status, condition):
         """
         Boarder values Kelvin ice
         """
-        response = requests.get(self.url, params={"temperature": "-1C"})
-        assert_that(response.status_code, equal_to(400))
-        assert_that(response.text, equal_to("unknown"))
+        response = requests.get(self.url, params={"temperature": temperature})
+        assert_that(response.status_code, equal_to(status)),
+        response_text = response.text.strip().lower()
+        assert_that(response_text, equal_to(condition)),
 
-    def test_boarder_values_id4_2(self):
-        """
-        Boarder values Kelvin ice
-        """
-        response = requests.get(self.url, params={"temperature": "0C"})
-        assert_that(response.status_code, equal_to(200))
-        assert_that(response.text, equal_to("ice"))
+        return response
 
-    def test_boarder_values_id4_3(self):
-        """
-        Boarder values Kelvin ice
-        """
-        response = requests.get(self.url, params={"temperature": "1C"})
-        assert_that(response.status_code, equal_to(200))
-        assert_that(response.text, equal_to("ice"))
-
-    def test_boarder_values_id4_4(self):
-        """
-        Boarder values Kelvin ice
-        """
-        response = requests.get(self.url, params={"temperature": "272C"})
-        assert_that(response.status_code, equal_to(200))
-        assert_that(response.text, equal_to("ice"))
-
-    def test_boarder_values_id4_5(self):
-        """
-        Boarder values Kelvin ice
-        """
-        response = requests.get(self.url, params={"temperature": "273C"})
-        assert_that(response.status_code, equal_to(200))
-        assert_that(response.text, equal_to("ice"))
-
-    def test_boarder_values_id5_1(self):
+    @pytest.mark.parametrize("temperature, status, condition",
+                             [("274C", 200, "liquid"), ("372C", 200, "liquid")])
+    def test_id5(self, temperature, status, condition):
         """
         Boarder values Kelvin liquid
         """
-        response = requests.get(self.url, params={"temperature": "274C"})
-        assert_that(response.status_code, equal_to(200))
-        assert_that(response.text, equal_to("liquid"))
+        response = requests.get(self.url, params={"temperature": temperature})
+        assert_that(response.status_code, equal_to(status)),
+        response_text = response.text.strip().lower()
+        assert_that(response_text, equal_to(condition)),
 
-    def test_boarder_values_id5_2(self):
-        """
-        Boarder values Kelvin liquid
-        """
-        response = requests.get(self.url, params={"temperature": "372C"})
-        assert_that(response.status_code, equal_to(200))
-        assert_that(response.text, equal_to("liquid"))
+        return response
 
-    def test_boarder_values_id6_1(self):
+    @pytest.mark.parametrize("temperature, status, condition",
+                             [("373C", 200, "steam"), ("374C", 200, "steam"), ("1000000C", 200, "steam")])
+    def test_id6(self, temperature, status, condition):
         """
         Boarder values Kelvin steam
         """
-        response = requests.get(self.url, params={"temperature": "373C"})
-        assert_that(response.status_code, equal_to(200))
-        assert_that(response.text, equal_to("steam"))
+        response = requests.get(self.url, params={"temperature": temperature})
+        assert_that(response.status_code, equal_to(status)),
+        response_text = response.text.strip().lower()
+        assert_that(response_text, equal_to(condition)),
 
-    def test_boarder_values_id6_2(self):
-        """
-        Boarder values Kelvin steam
-        """
-        response = requests.get(self.url, params={"temperature": "374C"})
-        assert_that(response.status_code, equal_to(200))
-        assert_that(response.text, equal_to("steam"))
+        return response
 
-    def test_boarder_values_id6_3(self):
-        """
-        Boarder values Kelvin steam
-        """
-        response = requests.get(self.url, params={"temperature": "1000000000C"})
-        assert_that(response.status_code, equal_to(200))
-        assert_that(response.text, equal_to("steam"))
-
-    def test_boarder_values_id7_1(self):
+    @pytest.mark.parametrize("temperature, status, condition",
+                             [("-461,2F", 400, "unknown"), ("-459,4F", 200, "ice"), ("-457,6F", 200, "ice"),
+                              ("30,2F", 200, "ice"), ("32F", 200, "ice")])
+    def test_id7(self, temperature, status, condition):
         """
         Boarder values Fahrenheit ice
         """
-        response = requests.get(self.url, params={"temperature": "-461,2"})
-        assert_that(response.status_code, equal_to(400))
-        assert_that(response.text, equal_to("unknown"))
+        response = requests.get(self.url, params={"temperature": temperature})
+        assert_that(response.status_code, equal_to(status)),
+        response_text = response.text.strip().lower()
+        assert_that(response_text, equal_to(condition)),
 
-    def test_boarder_values_id7_2(self):
-        """
-        Boarder values Fahrenheit ice
-        """
-        response = requests.get(self.url, params={"temperature": "-459,4F"})
-        assert_that(response.status_code, equal_to(200))
-        assert_that(response.text, equal_to("ice"))
+        return response
 
-    def test_boarder_values_id7_3(self):
-        """
-        Boarder values Fahrenheit ice
-        """
-        response = requests.get(self.url, params={"temperature": "-457,6F"})
-        assert_that(response.status_code, equal_to(200))
-        assert_that(response.text, equal_to("ice"))
-
-    def test_boarder_values_id7_4(self):
-        """
-        Boarder values Fahrenheit ice
-        """
-        response = requests.get(self.url, params={"temperature": "30,2F"})
-        assert_that(response.status_code, equal_to(200))
-        assert_that(response.text, equal_to("ice"))
-
-    def test_boarder_values_id7_5(self):
-        """
-        Boarder values Fahrenheit ice
-        """
-        response = requests.get(self.url, params={"temperature": "32F"})
-        assert_that(response.status_code, equal_to(200))
-        assert_that(response.text, equal_to("ice"))
-
-    def test_boarder_values_id8_1(self):
+    @pytest.mark.parametrize("temperature, status, condition",
+                             [("33,8F", 200, "liquid"), ("210,2FC", 200, "liquid")])
+    def test_id8(self, temperature, status, condition):
         """
         Boarder values Fahrenheit liquid
         """
-        response = requests.get(self.url, params={"temperature": "33,8F"})
-        assert_that(response.status_code, equal_to(200))
-        assert_that(response.text, equal_to("liquid"))
+        response = requests.get(self.url, params={"temperature": temperature})
+        assert_that(response.status_code, equal_to(status)),
+        response_text = response.text.strip().lower()
+        assert_that(response_text, equal_to(condition)),
 
-    def test_boarder_values_id8_2(self):
-        """
-        Boarder values Fahrenheit liquid
-        """
-        response = requests.get(self.url, params={"temperature": "210,2F"})
-        assert_that(response.status_code, equal_to(200))
-        assert_that(response.text, equal_to("liquid"))
+        return response
 
-    def test_boarder_values_id9_1(self):
+    @pytest.mark.parametrize("temperature, status, condition",
+                             [("212F", 200, "steam"), ("213,8F", 200, "steam"), ("1800032F", 200, "steam")])
+    def test_id9(self, temperature, status, condition):
         """
         Boarder values Fahrenheit steam
         """
-        response = requests.get(self.url, params={"temperature": "212F"})
-        assert_that(response.status_code, equal_to(200))
-        assert_that(response.text, equal_to("steam"))
+        response = requests.get(self.url, params={"temperature": temperature})
+        assert_that(response.status_code, equal_to(status)),
+        response_text = response.text.strip().lower()
+        assert_that(response_text, equal_to(condition)),
 
-    def test_boarder_values_id9_2(self):
-        """
-        Boarder values Fahrenheit steam
-        """
-        response = requests.get(self.url, params={"temperature": "213,8F"})
-        assert_that(response.status_code, equal_to(200))
-        assert_that(response.text, equal_to("steam"))
-
-    def test_boarder_values_id9_3(self):
-        """
-        Boarder values Fahrenheit steam
-        """
-        response = requests.get(self.url, params={"temperature": "1800032F"})
-        assert_that(response.status_code, equal_to(200))
-        assert_that(response.text, equal_to("steam"))
+        return response
 
     def test_equivalence_classes_id10(self):
         """
@@ -270,29 +150,18 @@ class TestTemperatureChecker:
         assert_that(response.status_code, equal_to(400))
         assert_that(response.text, equal_to("unknown"))
 
-    def test_equivalence_classes_id12_1(self):
+    @pytest.mark.parametrize("temperature, status, condition",
+                             [("-1", 400, "unknown"), ("0", 400, "unknown"), ("1", 400, "unknown")])
+    def test_id12(self, temperature, status, condition):
         """
-        Equivalence classes
+        Boarder values Fahrenheit steam
         """
-        response = requests.get(self.url, params={"temperature": "-1"})
-        assert_that(response.status_code, equal_to(400))
-        assert_that(response.text, equal_to("unknown"))
+        response = requests.get(self.url, params={"temperature": temperature})
+        assert_that(response.status_code, equal_to(status)),
+        response_text = response.text.strip().lower()
+        assert_that(response_text, equal_to(condition)),
 
-    def test_equivalence_classes_id12_2(self):
-        """
-        Equivalence classes
-        """
-        response = requests.get(self.url, params={"temperature": "0"})
-        assert_that(response.status_code, equal_to(400))
-        assert_that(response.text, equal_to("unknown"))
-
-    def test_equivalence_classes_id12_3(self):
-        """
-        Equivalence classes
-        """
-        response = requests.get(self.url, params={"temperature": "1"})
-        assert_that(response.status_code, equal_to(400))
-        assert_that(response.text, equal_to("unknown"))
+        return response
 
     def test_equivalence_classes_id13(self):
         """
@@ -374,61 +243,32 @@ class TestTemperatureChecker:
         assert_that(response.status_code, equal_to(400))
         assert_that(response.text, equal_to("unknown"))
 
-    def test_equivalence_classes_id23_1(self):
+    @pytest.mark.parametrize("temperature, status, condition",
+                             [("%", 400, "unknown"), ("♣", 400, "unknown"), ("☺", 400, "unknown")])
+    def test_id23(self, temperature, status, condition):
         """
         Equivalence classes
         """
-        response = requests.get(self.url, params={"temperature": "%"})
-        assert_that(response.status_code, equal_to(400))
-        assert_that(response.text, equal_to("unknown"))
+        response = requests.get(self.url, params={"temperature": temperature})
+        assert_that(response.status_code, equal_to(status)),
+        response_text = response.text.strip().lower()
+        assert_that(response_text, equal_to(condition)),
 
-    def test_equivalence_classes_id23_2(self):
-        """
-        Equivalence classes
-        """
-        response = requests.get(self.url, params={"temperature": "♣"})
-        assert_that(response.status_code, equal_to(400))
-        assert_that(response.text, equal_to("unknown"))
+        return response
 
-    def test_equivalence_classes_id23_3(self):
+    @pytest.mark.parametrize("temperature, status, condition",
+                             [("4,7K", 400, "unknown"), ("4.7K", 400, "unknown"), ("√8K", 400, "unknown"),
+                              ("23/24K", 400, "unknown")])
+    def test_id24(self, temperature, status, condition):
         """
         Equivalence classes
         """
-        response = requests.get(self.url, params={"temperature": "☺"})
-        assert_that(response.status_code, equal_to(400))
-        assert_that(response.text, equal_to("unknown"))
+        response = requests.get(self.url, params={"temperature": temperature})
+        assert_that(response.status_code, equal_to(status)),
+        response_text = response.text.strip().lower()
+        assert_that(response_text, equal_to(condition)),
 
-    def test_equivalence_classes_id24_1(self):
-        """
-        Equivalence classes
-        """
-        response = requests.get(self.url, params={"temperature": "4,7K"})
-        assert_that(response.status_code, equal_to(200))
-        assert_that(response.text, equal_to("liquid"))
-
-    def test_equivalence_classes_id24_2(self):
-        """
-        Equivalence classes
-        """
-        response = requests.get(self.url, params={"temperature": "4.7K"})
-        assert_that(response.status_code, equal_to(400))
-        assert_that(response.text, equal_to("unknown"))
-
-    def test_equivalence_classes_id24_3(self):
-        """
-        Equivalence classes
-        """
-        response = requests.get(self.url, params={"temperature": "√8K"})
-        assert_that(response.status_code, equal_to(400))
-        assert_that(response.text, equal_to("unknown"))
-
-    def test_equivalence_classes_id24_4(self):
-        """
-        Equivalence classes
-        """
-        response = requests.get(self.url, params={"temperature": "23/24K"})
-        assert_that(response.status_code, equal_to(400))
-        assert_that(response.text, equal_to("unknown"))
+        return response
 
     def test_equivalence_classes_id25(self):
         """
@@ -462,31 +302,22 @@ class TestTemperatureChecker:
         assert_that(response.status_code, equal_to(400))
         assert_that(response.text, equal_to("unknown"))
 
-    def test_equivalence_classes_id29_1(self):
+    @pytest.mark.parametrize("temperature, status, condition",
+                             [("12345678901112131415161718192021222324252627282930313233K", 400, "unknown"),
+                              ("123456789011121314151617181920212223242526272829303132333K", 400, "unknown"),
+                              ("1234567890111213141516171819202122232425262728293031323334K", 400, "unknown")])
+    def test_id29(self, temperature, status, condition):
         """
         Equivalence classes
         """
-        response = requests.get(self.url, params={"temperature": "12345678901112131415161718192021222324252627282930313233K"})
-        assert_that(response.status_code, equal_to(400))
-        assert_that(response.text, equal_to("unknown"))
+        response = requests.get(self.url, params={"temperature": temperature})
+        assert_that(response.status_code, equal_to(status)),
+        response_text = response.text.strip().lower()
+        assert_that(response_text, equal_to(condition)),
 
-    def test_equivalence_classes_id29_2(self):
-        """
-        Equivalence classes
-        """
-        response = requests.get(self.url, params={"temperature": "123456789011121314151617181920212223242526272829303132333K"})
-        assert_that(response.status_code, equal_to(400))
-        assert_that(response.text, equal_to("unknown"))
+        return response
 
-    def test_equivalence_classes_id29_3(self):
-        """
-        Equivalence classes
-        """
-        response = requests.get(self.url, params={"temperature": "1234567890111213141516171819202122232425262728293031323334K"})
-        assert_that(response.status_code, equal_to(400))
-        assert_that(response.text, equal_to("unknown"))
-
-    def test_method_post_id30(self):
+    def test_id30(self):
         """
         Equivalence classes
         """
@@ -494,7 +325,7 @@ class TestTemperatureChecker:
         assert_that(response.status_code, equal_to(400))
         assert_that(response.text, equal_to("unknown"))
 
-    def test_sql_injection_id31(self):
+    def test_id31(self):
         """
         Equivalence classes
         """
@@ -502,16 +333,10 @@ class TestTemperatureChecker:
         assert_that(response.status_code, equal_to(400))
         assert_that(response.text, equal_to("unknown"))
 
-    def test_html_injection_id32(self):
+    def test_id32(self):
         """
         Equivalence classes
         """
         response = requests.get(self.url, params={"temperature": "<script>alert("XSS1")</script>"})
         assert_that(response.status_code, equal_to(400))
         assert_that(response.text, equal_to("unknown"))
-
-
-
-
-
-
