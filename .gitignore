@@ -1,3 +1,6 @@
 # Environments
 
 venv/
+#allure-report/
+#allure-results/
+#.pytest_cache/
